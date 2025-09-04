@@ -37,7 +37,7 @@ export default function RootLayout({
         <main>{children}</main>
         <footer className="bg-gray-800 text-white py-8 mt-12">
           <div className="container mx-auto px-4 text-center">
-            <p>&copy; 2024 BookDiscovery. Todos los derechos reservados.</p>
+            <p>&copy; 2025 BookDiscovery. Todos los derechos reservados.</p>
           </div>
         </footer>
       </body>

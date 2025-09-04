@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import BookSearch from '@/components/BookSearch'
-import BookList from '@/components/BookList'
-import BookDetails from '@/components/BookDetails'
-import { Book, Review, GoogleBooksResponse, GoogleBookVolume } from '@/types'
+import BookSearch from '../components/BookSearch'
+import BookList from '../components/BookList'
+import BookDetails from '../components/BookDetails'
+import { Book, Review, GoogleBooksResponse, GoogleBookVolume } from '../types'
 
 export default function Home() {
   const [searchResults, setSearchResults] = useState<Book[]>([])

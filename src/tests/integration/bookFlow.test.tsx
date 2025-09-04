@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@/utils/test-utils'
-import Home from '@/app/page'
+import { render, screen, fireEvent, waitFor } from '../../utils/test-utils'
+import Home from '../../app/page'
 
 describe('Book Flow Integration', () => {
   const mockBookData = {

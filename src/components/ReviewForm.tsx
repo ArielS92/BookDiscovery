@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Review } from '@/types'
+import { Review } from '../types'
 
 interface ReviewFormProps {
   onSubmit: (review: Omit<Review, 'id' | 'votes'>) => void;

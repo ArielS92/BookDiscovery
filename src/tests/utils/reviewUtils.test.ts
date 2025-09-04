@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { calculateAverageRating, sortReviewsByVotes } from '@/utils/reviewUtils'
-import { Review } from '@/types'
+import { calculateAverageRating, sortReviewsByVotes } from '../../utils/reviewUtils'
+import { Review } from '../../types'
 
 describe('reviewUtils', () => {
   const mockReviews: Review[] = [

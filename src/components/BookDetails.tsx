@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Image from 'next/image' // Importar Image de next/image
-import { Book, Review } from '@/types'
+import { Book, Review } from '../types'
 import ReviewForm from './ReviewForm'
 import ReviewList from './ReviewList'
 

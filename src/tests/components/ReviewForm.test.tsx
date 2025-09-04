@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@/utils/test-utils'
-import ReviewForm from '@/components/ReviewForm'
+import { render, screen, fireEvent } from '../../utils/test-utils'
+import ReviewForm from '../../components/ReviewForm'
 
 describe('ReviewForm', () => {
   const mockOnSubmit = vi.fn()

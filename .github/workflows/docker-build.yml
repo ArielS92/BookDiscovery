@@ -9,6 +9,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  NODE_ENV: production
 
 jobs:
   docker-build:
@@ -21,6 +22,23 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Verify build locally
+        run: |
+          echo "=== Verificando build localmente ==="
+          npm ci
+          npm run type-check
+          npm run lint
+          npm run build
+          echo "✅ Build local verificado"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -45,7 +63,37 @@ jobs:
             type=sha,prefix=,suffix=,format=long
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build and push Docker image
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          load: true
+          tags: bookdiscovery:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_ENV=production
+
+      - name: Test Docker image
+        run: |
+          echo "=== Probando imagen Docker ==="
+          docker run -d --name bookdiscovery-test -p 3000:3000 bookdiscovery:latest
+          sleep 15
+          
+          # Health check
+          if curl -f http://localhost:3000; then
+            echo "✅ Contenedor funciona correctamente"
+            docker stop bookdiscovery-test
+            docker rm bookdiscovery-test
+          else
+            echo "❌ El contenedor no está respondiendo"
+            docker logs bookdiscovery-test
+            exit 1
+          fi
+
+      - name: Push Docker image
+        if: success()
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -58,61 +106,31 @@ jobs:
             NODE_ENV=production
 
       - name: Generate SBOM
+        if: success()
         uses: anchore/sbom-action@v0
         with:
           image: ${{ steps.meta.outputs.tags }}
 
       - name: Upload SBOM
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: sbom
           path: sbom.spdx.json
 
       - name: Scan image for vulnerabilities
+        if: success()
         uses: anchore/scan-action@v3
         with:
           image: ${{ steps.meta.outputs.tags }}
           fail-build: false
           severity-cutoff: high
 
-  test-image:
-    name: Test Docker Image
-    runs-on: ubuntu-latest
-    needs: docker-build
-    if: success()
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build image for testing
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          tags: bookdiscovery:test
-          load: true
-
-      - name: Run container health check
-        run: |
-          docker run -d -p 3000:3000 --name bookdiscovery-test bookdiscovery:test
-          sleep 10
-          
-          # Health check
-          curl -f http://localhost:3000 || exit 1
-          echo "✅ Container is healthy"
-          
-          # Cleanup
-          docker stop bookdiscovery-test
-          docker rm bookdiscovery-test
-
   deploy-preview:
     name: Deploy Preview
     runs-on: ubuntu-latest
-    needs: [docker-build, test-image]
-    if: github.event_name == 'pull_request'
+    needs: docker-build
+    if: github.event_name == 'pull_request' && success()
 
     steps:
       - name: Checkout repository
@@ -120,14 +138,14 @@ jobs:
 
       - name: Deploy to Preview Environment
         run: |
-          echo "🚀 Deploying preview for PR #${{ github.event.number }}"
-          # Aquí puedes agregar lógica para desplegar en un entorno de preview
-          # Por ejemplo: Vercel Preview, Railway, etc.
+          echo "🚀 Desplegando preview para PR #${{ github.event.pull_request.number }}"
+          echo "📦 Imagen: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          # Aquí puedes agregar lógica para desplegar en Vercel, Railway, etc.
 
   report:
     name: Docker Build Report
     runs-on: ubuntu-latest
-    needs: [docker-build, test-image]
+    needs: [docker-build]
     if: always()
 
     steps:
@@ -142,12 +160,39 @@ jobs:
           echo "- **Status:** ${{ needs.docker-build.result }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          echo "### 🧪 Test Results" >> $GITHUB_STEP_SUMMARY
-          echo "- **Image Test:** ${{ needs.test-image.result }}" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.docker-build.result }}" == "success" ]; then
+            echo "### 🏷️ Available Tags" >> $GITHUB_STEP_SUMMARY
+            echo "- \`latest\`" >> $GITHUB_STEP_SUMMARY
+            echo "- \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "- \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            echo "### 📊 Pull Command" >> $GITHUB_STEP_SUMMARY
+            echo '```bash' >> $GITHUB_STEP_SUMMARY
+            echo "docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+          
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          if [ "${{ needs.docker-build.result }}" == "success" ] && [ "${{ needs.test-image.result }}" == "success" ]; then
+          if [ "${{ needs.docker-build.result }}" == "success" ]; then
             echo "✅ **Overall Status:** Docker image built and tested successfully" >> $GITHUB_STEP_SUMMARY
           else
-            echo "❌ **Overall Status:** Docker build or test failed" >> $GITHUB_STEP_SUMMARY
+            echo "❌ **Overall Status:** Docker build failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Debug Tips:**" >> $GITHUB_STEP_SUMMARY
+            echo "- Run \`npm run build\` locally to check for errors" >> $GITHUB_STEP_SUMMARY
+            echo "- Check TypeScript errors with \`npm run type-check\`" >> $GITHUB_STEP_SUMMARY
+            echo "- Verify linting with \`npm run lint\`" >> $GITHUB_STEP_SUMMARY
           fi
+
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-build-logs
+          path: |
+            **/npm-debug.log*
+            **/yarn-debug.log*
+            **/yarn-error.log*
+          if-no-files-found: ignore

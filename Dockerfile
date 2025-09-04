@@ -7,8 +7,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY package-lock.json ./
 
-# Instalar dependencias
-RUN npm ci --only=production
+# Instalar TODAS las dependencias (incluyendo devDependencies) para el build
+RUN npm ci
 
 # Copiar el código fuente
 COPY . .
@@ -29,6 +29,7 @@ RUN npm ci --only=production --ignore-scripts
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/next.config.js ./next.config.js
 
 # Crear usuario no-root
 RUN addgroup -g 1001 -S nodejs

@@ -12,7 +12,11 @@
     "test:ui": "vitest --ui",
     "test:watch": "vitest watch",
     "type-check": "tsc --noEmit --pretty",
-    "lint": "next lint"
+    "lint": "next lint",
+    "docker:build": "docker build -t bookdiscovery .",
+    "docker:run": "docker run -p 3000:3000 bookdiscovery",
+    "docker:compose": "docker-compose up",
+    "docker:compose:build": "docker-compose up --build"
   },
   "dependencies": {
     "next": "15.5.2",

@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import BookSearch from '@/components/BookSearch'
 import BookList from '@/components/BookList'
 import BookDetails from '@/components/BookDetails'
-import { Book, Review } from '@/types'
+import { Book, Review, GoogleBooksResponse, GoogleBookVolume } from '@/types'
 
 export default function Home() {
   const [searchResults, setSearchResults] = useState<Book[]>([])
@@ -33,13 +33,13 @@ export default function Home() {
         throw new Error('Error al buscar libros')
       }
       
-      const data = await response.json()
-      const books: Book[] = data.items?.map((item: any) => ({
+      const data: GoogleBooksResponse = await response.json()
+      const books: Book[] = data.items?.map((item: GoogleBookVolume) => ({
         id: item.id,
-        title: item.volumeInfo.title,
+        title: item.volumeInfo.title || 'Sin título',
         authors: item.volumeInfo.authors || [],
-        publishedDate: item.volumeInfo.publishedDate,
-        description: item.volumeInfo.description,
+        publishedDate: item.volumeInfo.publishedDate || '',
+        description: item.volumeInfo.description || '',
         imageUrl: item.volumeInfo.imageLinks?.thumbnail,
         isbn: item.volumeInfo.industryIdentifiers?.[0]?.identifier,
         pageCount: item.volumeInfo.pageCount,
@@ -66,6 +66,8 @@ export default function Home() {
   }
 
   const handleAddReview = (review: Omit<Review, 'id' | 'votes'>) => {
+    if (!selectedBook) return;
+    
     const newReview: Review = {
       ...review,
       id: Date.now().toString(),
@@ -74,17 +76,19 @@ export default function Home() {
     
     const updatedReviews = [...reviews, newReview]
     setReviews(updatedReviews)
-    localStorage.setItem(`reviews-${selectedBook!.id}`, JSON.stringify(updatedReviews))
+    localStorage.setItem(`reviews-${selectedBook.id}`, JSON.stringify(updatedReviews))
   }
 
   const handleVote = (reviewId: string, increment: number) => {
+    if (!selectedBook) return;
+    
     const updatedReviews = reviews.map(review => 
       review.id === reviewId 
         ? { ...review, votes: review.votes + increment } 
         : review
     )
     setReviews(updatedReviews)
-    localStorage.setItem(`reviews-${selectedBook!.id}`, JSON.stringify(updatedReviews))
+    localStorage.setItem(`reviews-${selectedBook.id}`, JSON.stringify(updatedReviews))
   }
 
   return (

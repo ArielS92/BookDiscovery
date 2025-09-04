@@ -7,7 +7,6 @@ describe('Book Search Logic', () => {
 
   it('constructs correct API URL for title search', () => {
     const query = 'Harry Potter'
-    const searchType = 'title'
     const expectedUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=20`
     
     expect(expectedUrl).toBe('https://www.googleapis.com/books/v1/volumes?q=Harry%20Potter&maxResults=20')
@@ -15,7 +14,6 @@ describe('Book Search Logic', () => {
 
   it('constructs correct API URL for author search', () => {
     const query = 'Rowling'
-    const searchType = 'author'
     const searchQuery = `inauthor:${query}`
     const expectedUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchQuery)}&maxResults=20`
     
@@ -24,7 +22,6 @@ describe('Book Search Logic', () => {
 
   it('constructs correct API URL for ISBN search', () => {
     const query = '9780439708180'
-    const searchType = 'isbn'
     const searchQuery = `isbn:${query}`
     const expectedUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchQuery)}&maxResults=20`
     

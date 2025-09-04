@@ -1,3 +1,4 @@
+import Image from 'next/image' // Importar Image de next/image
 import { Book } from '@/types'
 
 interface BookListProps {
@@ -31,16 +32,18 @@ export default function BookList({ books, onBookSelect, selectedBookId }: BookLi
             onClick={() => onBookSelect(book)}
             className={`p-4 border rounded-lg cursor-pointer transition-all duration-200 ${
               selectedBookId === book.id
-                ? 'border-gray-500 bg-gray-50'
-                : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                ? 'border-primary-500 bg-primary-50'
+                : 'border-gray-200 hover:border-primary-300 hover:bg-gray-50'
             }`}
           >
             <div className="flex items-start space-x-4">
               {book.imageUrl ? (
-                <img
+                <Image
                   src={book.imageUrl}
                   alt={book.title}
-                  className="w-16 h-24 object-cover rounded shadow-md"
+                  width={64}
+                  height={96}
+                  className="object-cover rounded shadow-md"
                 />
               ) : (
                 <div className="w-16 h-24 bg-gray-200 rounded shadow-md flex items-center justify-center">

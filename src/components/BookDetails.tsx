@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Image from 'next/image' // Importar Image de next/image
 import { Book, Review } from '@/types'
 import ReviewForm from './ReviewForm'
 import ReviewList from './ReviewList'
@@ -20,10 +21,12 @@ export default function BookDetails({ book, reviews, onAddReview, onVote }: Book
     <div className="bg-white rounded-lg shadow-md p-6 sticky top-6">
       <div className="flex justify-center mb-6">
         {book.imageUrl ? (
-          <img
+          <Image
             src={book.imageUrl.replace('http:', 'https:')}
             alt={book.title}
-            className="w-48 h-72 object-cover rounded shadow-lg"
+            width={192}
+            height={288}
+            className="object-cover rounded shadow-lg"
           />
         ) : (
           <div className="w-48 h-72 bg-gray-200 rounded shadow-lg flex items-center justify-center">
@@ -34,6 +37,7 @@ export default function BookDetails({ book, reviews, onAddReview, onVote }: Book
         )}
       </div>
 
+      {/* Resto del código permanece igual */}
       <h2 className="text-2xl font-bold text-gray-800 mb-2">{book.title}</h2>
       <p className="text-lg text-gray-600 mb-4">por {book.authors.join(', ')}</p>
 
@@ -93,7 +97,7 @@ export default function BookDetails({ book, reviews, onAddReview, onVote }: Book
 
       <button
         onClick={() => setShowReviewForm(!showReviewForm)}
-        className="w-full mb-6 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+        className="w-full mb-6 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
       >
         {showReviewForm ? 'Cancelar' : 'Escribir Reseña'}
       </button>
@@ -102,9 +106,9 @@ export default function BookDetails({ book, reviews, onAddReview, onVote }: Book
         <ReviewForm 
           onSubmit={onAddReview} 
           onCancel={() => setShowReviewForm(false)}
-          bookId={book.id} // Pasar el bookId
+          bookId={book.id}
         />
-      )}  
+      )}
 
       <ReviewList reviews={reviews} onVote={onVote} />
     </div>

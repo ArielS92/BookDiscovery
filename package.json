@@ -6,10 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "type-check": "tsc --noEmit --pretty",
+    "lint": "next lint"
   },
   "dependencies": {
     "next": "15.5.2",

@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import BookSearch from '../components/BookSearch'
 import BookList from '../components/BookList'
 import BookDetails from '../components/BookDetails'
+import Pagination from '../components/Pagination'
 import { Book, Review, GoogleBooksResponse, GoogleBookVolume } from '../types'
 
 export default function Home() {
@@ -12,11 +13,16 @@ export default function Home() {
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalItems, setTotalItems] = useState(0)
+  const [lastQuery, setLastQuery] = useState('')
+  const [lastSearchType, setLastSearchType] = useState('')
+  const itemsPerPage = 20
 
-  const handleSearch = async (query: string, searchType: string) => {
+  const handleSearch = async (query: string, searchType: string, page: number = 1) => {
     setLoading(true)
     setError(null)
-    
+
     try {
       let searchQuery = query
       if (searchType === 'isbn') {
@@ -24,15 +30,16 @@ export default function Home() {
       } else if (searchType === 'author') {
         searchQuery = `inauthor:${query}`
       }
-      
+
+      const startIndex = (page - 1) * itemsPerPage
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchQuery)}&maxResults=20`
+        `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchQuery)}&maxResults=${itemsPerPage}&startIndex=${startIndex}`
       )
-      
+
       if (!response.ok) {
         throw new Error('Error al buscar libros')
       }
-      
+
       const data: GoogleBooksResponse = await response.json()
       const books: Book[] = data.items?.map((item: GoogleBookVolume) => ({
         id: item.id,
@@ -45,8 +52,12 @@ export default function Home() {
         pageCount: item.volumeInfo.pageCount,
         categories: item.volumeInfo.categories || []
       })) || []
-      
+
       setSearchResults(books)
+      setTotalItems(data.totalItems)
+      setCurrentPage(page)
+      setLastQuery(query)
+      setLastSearchType(searchType)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido')
     } finally {
@@ -116,6 +127,12 @@ export default function Home() {
             books={searchResults} 
             onBookSelect={handleBookSelect}
             selectedBookId={selectedBook?.id}
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={(page) => handleSearch(lastQuery, lastSearchType, page)}
           />
         </div>
         

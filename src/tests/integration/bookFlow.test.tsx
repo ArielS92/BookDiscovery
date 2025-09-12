@@ -1,3 +1,4 @@
+import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '../../utils/test-utils'
 import Home from '../../app/page'
@@ -12,7 +13,7 @@ describe('Book Flow Integration', () => {
           authors: ['Test Author'],
           publishedDate: '2023-01-01',
           description: 'Test description',
-          imageLinks: { thumbnail: 'test.jpg' },
+          imageLinks: { thumbnail: 'https://via.placeholder.com/128x192.png?text=Test+Book' },
           industryIdentifiers: [{ identifier: '1234567890' }],
           pageCount: 200,
           categories: ['Fiction'],

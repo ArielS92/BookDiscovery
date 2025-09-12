@@ -1,3 +1,4 @@
+import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '../../utils/test-utils'
 import ReviewForm from '../../components/ReviewForm'
@@ -46,13 +47,18 @@ describe('ReviewForm', () => {
   })
 
   it('shows validation error when submitting without rating', async () => {
-    window.alert = vi.fn()
+    const alertMock = vi.fn()
+    window.alert = alertMock
     render(<ReviewForm {...defaultProps} />)
-    
+
+    // Fill the comment field to pass browser validation
+    const commentInput = screen.getByPlaceholderText('Escribe tu reseña aquí...')
+    fireEvent.change(commentInput, { target: { value: 'Test comment' } })
+
     const submitButton = screen.getByText('Enviar Reseña')
     fireEvent.click(submitButton)
-    
-    expect(window.alert).toHaveBeenCalledWith('Por favor selecciona una calificación')
+
+    expect(alertMock).toHaveBeenCalledWith('Por favor selecciona una calificación')
     expect(mockOnSubmit).not.toHaveBeenCalled()
   })
 

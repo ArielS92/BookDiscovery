@@ -1,3 +1,4 @@
+import React from 'react'
 import Image from 'next/image' // Importar Image de next/image
 import { Book } from '../types'
 

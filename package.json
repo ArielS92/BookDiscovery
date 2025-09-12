@@ -40,37 +40,6 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^3.2.4"
-  },
-  "vitest": {
-    "environment": "jsdom",
-    "setupFiles": [
-      "./src/test/setup.ts"
-    ],
-    "include": [
-      "src/**/__tests__/**/*.{test,spec}.{js,jsx,ts,tsx}"
-    ],
-    "coverage": {
-      "provider": "v8",
-      "reporter": [
-        "text",
-        "json",
-        "html"
-      ],
-      "include": [
-        "src/**/*.{ts,tsx}"
-      ],
-      "exclude": [
-        "node_modules/",
-        "src/test/",
-        "**/*.d.ts",
-        "**/types.ts",
-        "**/index.ts",
-        "**/layout.tsx",
-        "**/page.tsx",
-        "**/loading.tsx",
-        "**/error.tsx",
-        "**/not-found.tsx"
-      ]
-    }
   }
+
 }

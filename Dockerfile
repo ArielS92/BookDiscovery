@@ -1,5 +1,5 @@
 # Etapa de construcción
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -17,13 +17,13 @@ COPY . .
 RUN npm run build
 
 # Etapa de producción
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 
 WORKDIR /app
 
 # Instalar dependencias solo de producción
 COPY package*.json ./
-RUN npm ci --only=production --ignore-scripts
+RUN npm ci --only=production
 
 # Copiar el build desde la etapa de builder
 COPY --from=builder /app/.next ./.next
@@ -35,8 +35,8 @@ COPY --from=builder /app/next.config.ts ./next.config.ts
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
 
-# Cambiar ownership de los archivos
-RUN chown -R nextjs:nodejs /app/.next
+# Cambiar ownership de toda la carpeta /app
+RUN chown -R nextjs:nodejs /app
 
 # Cambiar al usuario no-root
 USER nextjs

@@ -1,101 +1,84 @@
-# BookDiscovery - Plataforma de Descubrimiento y Reseñas de Libros
+# Book Discovery Platform
 
-Una aplicación web para descubrir libros, leer reseñas y compartir tus propias opiniones.
+A platform for discovering books, reading reviews, and community voting. Built with React and Vite.
 
-## 🚀 Características
+## 🚀 Deployment
 
-- Búsqueda de libros usando Google Books API
-- Sistema de reseñas con calificación por estrellas
-- Votación comunitaria de reseñas
-- Interfaz responsive con Tailwind CSS
-- TypeScript para type safety
-- Tests unitarios con Vitest
+### Vercel (Recommended)
+1. Push your code to a GitHub repository.
+2. Go to [Vercel](https://vercel.com) and sign up/login.
+3. Click "Add New..." -> "Project".
+4. Import your GitHub repository.
+5. Vercel will automatically detect Vite.
+6. Click "Deploy".
 
-## 🛠️ Desarrollo
+### Netlify
+1. Push your code to GitHub.
+2. Go to [Netlify](https://www.netlify.com).
+3. "Add new site" -> "Import an existing project".
+4. Connect to GitHub and select your repo.
+5. Build command: `npm run build`.
+6. Publish directory: `dist`.
+7. Click "Deploy site".
 
-### Prerrequisitos
+## 🔄 CI/CD Pipelines (GitHub Actions)
 
-- Node.js 18+ 
-- npm o yarn
+This project includes automated workflows located in `.github/workflows/`:
 
-### Instalación
+### 1. Build Validation (`build.yml`)
+- **Trigger**: Pull Requests to `main` or `master`.
+- **Action**: Installs dependencies and runs `npm run build`.
+- **Goal**: Ensures that new code doesn't break the build process.
 
-1. Clona el repositorio:
-```bash
-git clone <url-del-repositorio>
-cd BookDiscovery
-npm install
-```
+### 2. Automated Testing (`test.yml`)
+- **Trigger**: Pull Requests to `main` or `master`.
+- **Action**: Installs dependencies and runs unit tests (`vitest`).
+- **Goal**: Prevents regressions by ensuring all tests pass before merging.
 
-2. Ejecuta la aplicación en modo desarrollo:
-```bash
-npm run dev
-```
+### 3. Docker Publishing (`docker.yml`)
+- **Trigger**: Push to `main` or `master`.
+- **Action**: Builds a Docker image and pushes it to GitHub Container Registry (ghcr.io).
+- **Goal**: Automates the delivery of the containerized application.
 
-3. Ejecuta los tests:
-```bash
-npm test
-```
+## 🐳 Docker
 
-## 🐳 Docker Deployment
+### Prerequisites
+- Docker installed on your machine.
 
-### Construir la imagen localmente
+### Running Locally with Docker
 
-```bash
-npm run docker:build
-```
+1. **Build the image:**
+   ```bash
+   docker build -t book-discovery .
+   ```
 
-### Ejecutar el contenedor
+2. **Run the container:**
+   ```bash
+   docker run -p 8080:80 book-discovery
+   ```
 
-```bash
-npm run docker:run
-```
+3. **Access the app:**
+   Open [http://localhost:8080](http://localhost:8080) in your browser.
 
-### Usar docker-compose
+### Docker Optimization
+- Uses **Multi-stage builds**:
+  - `builder` stage: Installs dependencies and builds the app.
+  - `production` stage: Uses lightweight `nginx:alpine` to serve the static files.
+- **Nginx**: Configured to handle SPA routing (redirects all requests to `index.html`).
 
-```bash
-npm run docker:compose
-```
+## 🛠️ Local Development
 
-## ⚙️ Variables de Entorno
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-- NODE_ENV: Define el entorno de ejecución (development, production, test)
-- PORT: Puerto donde corre la aplicación (por defecto 3000)
-- HOSTNAME: Host para la aplicación (por defecto 0.0.0.0)
+2. **Start dev server:**
+   ```bash
+   npm run dev
+   ```
 
-## 📦 GitHub Actions Workflows
-
-### 1. Build en Pull Requests
-
-- Se ejecuta automáticamente en cada Pull Request a las ramas `main` o `master`.
-- Instala dependencias con cache para acelerar builds.
-- Ejecuta type-check, lint y build de la aplicación.
-- Falla el PR si el build no es exitoso.
-- Proporciona feedback claro con logs y reportes.
-
-### 2. Tests en Pull Requests
-
-- Se ejecuta automáticamente en cada Pull Request a las ramas `main` o `master`.
-- Instala dependencias con cache.
-- Ejecuta type-check y todos los tests unitarios con cobertura.
-- Falla el PR si algún test no pasa.
-- Reporta resultados detallados y genera resumen.
-
-### 3. Docker Container Build y Publish
-
-- Se ejecuta cuando se hace push a la rama principal (`main` o `master`) o tags de versión.
-- Construye una imagen Docker optimizada con multi-stage build.
-- Publica la imagen en GitHub Container Registry (ghcr.io) con tags apropiados (latest, versión, commit hash).
-- Realiza pruebas de la imagen antes de publicar.
-- Escanea vulnerabilidades y genera reportes.
-
-## 🔗 Recursos Útiles
-
-- [Vercel Documentation](https://vercel.com/docs)
-- [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Docker Best Practices](https://docs.docker.com/develop/dev-best-practices/)
-- [Next.js Deployment Guide](https://nextjs.org/docs/deployment)
-
----
-
-Esta documentación cubre cómo desplegar localmente, cómo funcionan los workflows de CI/CD y cómo usar Docker para producción.
+3. **Run tests:**
+   ```bash
+   npm run test
+   ```

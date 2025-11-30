@@ -1,45 +1,32 @@
 {
-  "name": "my-app",
-  "version": "0.1.0",
+  "name": "book-discovery",
   "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "test": "vitest",
-    "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:ui": "vitest --ui",
-    "test:watch": "vitest watch",
-    "type-check": "tsc --noEmit --pretty",
-    "lint": "next lint",
-    "docker:build": "docker build -t bookdiscovery .",
-    "docker:run": "docker run -p 3000:3000 bookdiscovery",
-    "docker:compose": "docker-compose up",
-    "docker:compose:build": "docker-compose up --build"
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "next": "15.5.2",
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.6"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
-    "@testing-library/jest-dom": "^6.8.0",
+    "@eslint/js": "^9.39.1",
+    "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^14.6.1",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@types/testing-library__jest-dom": "^5.14.9",
-    "@vitest/ui": "^3.2.4",
-    "eslint": "^9",
-    "eslint-config-next": "15.5.2",
-    "jsdom": "^26.1.0",
-    "tailwindcss": "^4",
-    "typescript": "^5",
-    "vitest": "^3.2.4"
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "jsdom": "^27.2.0",
+    "vite": "^7.2.4",
+    "vitest": "^4.0.14"
   }
-
 }
